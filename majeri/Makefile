@@ -1,12 +1,12 @@
 CXXFLAGS := -Wall -Wextra
 LDFLAGS :=
-BISONFLAGS :=
+BISONFLAGS := --verbose
 
 .PHONY: compile clean
 
 run: build/java-parser
-	# ./$< 2hello.java
-	./$< HelloWorld.java
+	./$< 2hello.java
+	# ./$< HelloWorld.java
 
 compile:
 	build/java-parser

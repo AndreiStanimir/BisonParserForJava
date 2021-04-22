@@ -43,6 +43,7 @@
 %token OPEN_SQUARE_BRACKET;
 %token CLOSE_SQUARE_BRACKET;
 %token EQUALS;
+%token EQUALS_EQUALS;
 %token COMMA;
 %token SEMICOLON;
 %token DOT;
@@ -51,13 +52,15 @@
 %token LESS_THAN;
 %token GREATER_THAN;
  %token PLUS_PLUS;
+ %token MODULO;
 // Operator precedence
 %left LESS_THAN GREATER_THAN;
-%left PLUS MINUS;
+%left PLUS MINUS MODULO;
 
 %token <std::string> IDENTIFIER;
 %token <int> NUMBER;
 %token <std::string> STRING;
+// %token <bool> BOOLEAN;
 
 class_definition:
     access_modifier CLASS_KEYWORD IDENTIFIER
@@ -126,29 +129,33 @@ while_statement:
     }
 //https://docs.oracle.com/javase/specs/jls/se7/html/jls-14.html#jls-14.14
 post_increment_expression:
-    IDENTIFIER PLUS_PLUS
+    name PLUS_PLUS
 
 StatementExpression:
     assignment
-    | post_increment_expression
+    | post_increment_expression 
     | method_call
-    | variable_declaration
 StatementExpressionList:
     StatementExpression
     | StatementExpressionList COMMA StatementExpression
 for_init:
-    StatementExpressionList
-    | variable_declaration
+    variable_declaration
+    | StatementExpressionList
+    {
+        std::cout << "for init\n";
+    }
+
    
 for_update:
-
+    post_increment_expression
+    {
+        std::cout << "for update\n";
+    }
 for_statement:
-    FOR_KEYWORD 
-        OPEN_PARENS statement SEMICOLON expression SEMICOLON statement
-        CLOSE_PARENS block 
-        {
-            std::cout << "for block\n";
-        }
+    FOR_KEYWORD OPEN_PARENS for_init expression SEMICOLON for_update CLOSE_PARENS block 
+    {
+        std::cout << "for block\n";
+    }
 
 condition:
     OPEN_PARENS expression CLOSE_PARENS
@@ -193,6 +200,9 @@ expression:
     | expression MINUS expression
     | expression LESS_THAN expression
     | expression GREATER_THAN expression
+    | expression MODULO expression
+    | expression EQUALS_EQUALS expression
+
     | method_call
     | name
     | literal
