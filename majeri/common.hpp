@@ -10,11 +10,6 @@ enum class AccessModifier
     PRIVATE
 };
 
-enum class MutabilityModifier
-{
-    MUTABLE,
-    FINAL
-};
 
 enum class StorageModifier
 {

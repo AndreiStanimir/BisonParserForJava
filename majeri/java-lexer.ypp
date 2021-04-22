@@ -1,6 +1,3 @@
-/** Lexical analyser for Java */
-
-/* Disable unneeded features */
 %option noyywrap nounput noinput batch
 
 /* Enable debug mode */
@@ -22,7 +19,6 @@ LETTER [a-zA-Z_]
 LETTERDIGIT [a-zA-Z0-9_]
 IDENTIFIER {LETTER}{LETTERDIGIT}*
 
-/* Define an exclusive mode for the multi line comment */
 %x COMMENT
 
 %%
@@ -41,6 +37,7 @@ public return yy::parser::make_PUBLIC_KEYWORD();
 
 final return yy::parser::make_FINAL_KEYWORD();
 static return yy::parser::make_STATIC_KEYWORD();
+
 
 if return yy::parser::make_IF_KEYWORD();
 while return yy::parser::make_WHILE_KEYWORD();
@@ -70,8 +67,8 @@ return return yy::parser::make_RETURN_KEYWORD();
 
 {IDENTIFIER} return yy::parser::make_IDENTIFIER(yytext);
 
-[[:space:]] /* Ignore whitespace */
+[[:space:]] 
 
-<<EOF>>  { static int once = 0; return once++;}
+<<EOF>> return yy::parser::make_YYEOF();
 
 %%

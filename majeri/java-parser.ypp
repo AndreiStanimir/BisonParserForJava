@@ -84,17 +84,17 @@ definition:
     class_variable_definition | method_definition
 
 class_variable_definition:
-    access_modifier mutability_modifier storage_modifier type_identifier name optional_initializer SEMICOLON
+    access_modifier storage_modifier type_identifier name optional_initializer SEMICOLON
     {
-        std::cout << "Defining class variable " << $5 << '\n';
+        std::cout << "Defining class variable " << $4 << '\n';
     }
 
 method_definition:
-    access_modifier mutability_modifier storage_modifier type_identifier name
+    access_modifier storage_modifier type_identifier name
     OPEN_PARENS method_arguments CLOSE_PARENS
     OPEN_BRACKET method_body CLOSE_BRACKET
     {
-        std::cout << "Defining method " << $5 << '\n';
+        std::cout << "Defining method " << $4 << '\n';
     }
 
 method_arguments:
@@ -238,12 +238,7 @@ access_modifier:
     | PRIVATE_KEYWORD
     { $$ = AccessModifier::PRIVATE; }
 
-%nterm <MutabilityModifier> mutability_modifier;
-mutability_modifier:
-    %empty
-    { $$ = MutabilityModifier::MUTABLE; }
-    | FINAL_KEYWORD
-    { $$ = MutabilityModifier::FINAL; }
+
 
 %nterm <StorageModifier> storage_modifier;
 storage_modifier:
