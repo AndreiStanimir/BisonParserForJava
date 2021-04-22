@@ -1,6 +1,3 @@
-// Require a modern version of Bison
-%require "3.5"
-
 // Generate C++ code
 %language "c++"
 
@@ -58,7 +55,7 @@
 %token PLUS_PLUS;
 %token MODULO;
 // Operator precedence
-%left LESS_THAN GREATER_THAN;
+%left LESS_THAN GREATER_THAN EQUALS_EQUALS;
 %left PLUS MINUS MODULO;
 
 %token <std::string> IDENTIFIER;
@@ -66,67 +63,67 @@
 %token <std::string> STRING;
 // %token <bool> BOOLEAN;
 
-class_definition:
-    access_modifier CLASS_KEYWORD IDENTIFIER
-    OPEN_BRACKET class_body CLOSE_BRACKET
+classDefinition:
+    accessModifier CLASS_KEYWORD IDENTIFIER
+    OPEN_BRACKET classBody CLOSE_BRACKET
     {
         std::cout << "Defining class " << $3 << '\n';
     }
 
-%nterm class_body;
-class_body:
+%nterm classBody;
+classBody:
     definitions
 
 definitions:
-    %empty | definition definitions
+    %empty | classOrMethodDefinition definitions
 
-definition:
-    class_variable_definition | method_definition
+classOrMethodDefinition:
+    classVariableDefinition | methodDefinition
 
-class_variable_definition:
-    access_modifier storage_modifier type_identifier name optional_initializer SEMICOLON
+classVariableDefinition:
+    accessModifier storageModifier typeIdentifier name optionalInitializer SEMICOLON
     {
         std::cout << "Defining class variable " << $4 << '\n';
     }
 
-method_definition:
-    access_modifier storage_modifier type_identifier name
-    OPEN_PARENS method_arguments CLOSE_PARENS
-    OPEN_BRACKET method_body CLOSE_BRACKET
+methodDefinition:
+    accessModifier storageModifier typeIdentifier name
+    OPEN_PARENS methodArguments CLOSE_PARENS
+    OPEN_BRACKET methodBody CLOSE_BRACKET
     {
-        std::cout << "Defining method " << $4 << '\n';
+        std::cout << "Definesc metoda " << $4 << '\n';
     }
 
-method_arguments:
+methodArguments:
     %empty
     | argument
-    | argument COMMA method_arguments
+    | argument COMMA methodArguments
 
 argument:
-    type_identifier IDENTIFIER
+    typeIdentifier IDENTIFIER
 
-method_body:
+methodBody:
     statements
 
 statements:
     %empty | statement statements
 
 statement:
-    variable_declaration
+    variableDeclaration
     | assignment
-    | method_call SEMICOLON
-    | if_statement
-    | while_statement
-    | for_statement
-    | return_statement
+    | methodCall SEMICOLON
+    | ifStatement
+    | whileStatement
+    | forStatement
+    | returnStatement
 
-if_statement:
+ifStatement:
     IF_KEYWORD condition block
     {
         std::cout << "if block\n";
     }
 
-while_statement:
+whileStatement:
     WHILE_KEYWORD condition block
     {
         std::cout << "while block\n";
@@ -134,31 +131,31 @@ while_statement:
 
     
 //https://docs.oracle.com/javase/specs/jls/se7/html/jls-14.html#jls-14.14
-post_increment_expression:
+postIncrementExpression:
     name PLUS_PLUS
 
-StatementExpression:
+statementExpression:
     assignment
-    | post_increment_expression 
-    | method_call
+    | postIncrementExpression 
+    | methodCall
 StatementExpressionList:
-    StatementExpression
-    | StatementExpressionList COMMA StatementExpression
-for_init:
-    variable_declaration
+    statementExpression
+    | StatementExpressionList COMMA statementExpression
+forInit:
+    variableDeclaration
     | StatementExpressionList
     {
         std::cout << "for init\n";
     }
 
    
-for_update:
-    post_increment_expression
+forUpdate:
+    postIncrementExpression
     {
         std::cout << "for update\n";
     }
-for_statement:
-    FOR_KEYWORD OPEN_PARENS for_init expression2 SEMICOLON for_update CLOSE_PARENS block 
+forStatement:
+    FOR_KEYWORD OPEN_PARENS forInit expression2 SEMICOLON forUpdate CLOSE_PARENS block 
     {
         std::cout << "for block\n";
     }
@@ -169,8 +166,8 @@ condition:
 block:
     OPEN_BRACKET statements CLOSE_BRACKET
 
-variable_declaration:
-    type_identifier name optional_initializer SEMICOLON
+variableDeclaration:
+    typeIdentifier name optionalInitializer SEMICOLON
     {
         std::cout << "Declaring variable " << $2 << '\n';
     }
@@ -181,21 +178,21 @@ assignment:
         std::cout << "Assigning to variable " << $1 << '\n';
     }
 
-method_call:
-    method_reference
-    OPEN_PARENS method_parameters CLOSE_PARENS
+methodCall:
+    methodReference
+    OPEN_PARENS methodParameters CLOSE_PARENS
     {
         std::cout << "Calling method " << $1 << '\n';
     }
 
-return_statement:
+returnStatement:
     RETURN_KEYWORD SEMICOLON
     | RETURN_KEYWORD expression2 SEMICOLON
 
-method_parameters:
+methodParameters:
     %empty
     | value
-    | value COMMA method_parameters
+    | value COMMA methodParameters
 
 value:
     expression2
@@ -209,7 +206,7 @@ expression:
     | expression MODULO expression {$$ = $1 + "%" + $3;}
     | expression EQUALS_EQUALS expression {$$ = $1 + "==" + $3;}
 
-    | method_call 
+    | methodCall 
     | name {$$ = $1;}
     | literal {$$ = $1;}
 
@@ -220,15 +217,15 @@ expression2:
         std::cout << "Calling expression " << $1 << '\n';
     }
     
-%nterm <std::string> method_reference;
-method_reference:
+%nterm <std::string> methodReference;
+methodReference:
     name
     { $$ = $1; }
-    | name DOT method_reference
+    | name DOT methodReference
     { $$ = $1 + "." + $3; }
 
-%nterm <AccessModifier> access_modifier;
-access_modifier:
+%nterm <AccessModifier> accessModifier;
+accessModifier:
     %empty
     { $$ = AccessModifier::DEFAULT; }
     | PUBLIC_KEYWORD
@@ -240,14 +237,14 @@ access_modifier:
 
 
 
-%nterm <StorageModifier> storage_modifier;
-storage_modifier:
+%nterm <StorageModifier> storageModifier;
+storageModifier:
     %empty
     { $$ = StorageModifier::INSTANCE; }
     | STATIC_KEYWORD
     { $$ = StorageModifier::STATIC; }
 
-type_identifier:
+typeIdentifier:
     IDENTIFIER
     {
         std::cout << "Referencing object type " << $1 << '\n';
@@ -261,7 +258,7 @@ type_identifier:
 name:
     IDENTIFIER
 
-optional_initializer:
+optionalInitializer:
     %empty | initializer
 
 initializer:
