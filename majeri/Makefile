@@ -4,12 +4,12 @@ BISONFLAGS := --verbose
 
 .PHONY: compile clean
 
-run: build/java-parser
+run: build/parser
 	./$< 2hello.java
 	# ./$< HelloWorld.java
 
 compile:
-	build/java-parser
+	build/parser
 
 clean:
 	-rm -r build
@@ -20,17 +20,17 @@ build:
 build/common.hpp: common.hpp
 	cp $< $@
 
-build/java-parser: build/java-parser.o build/java-lexer.o | build
+build/parser: build/parser.o build/java-lexer.o | build
 	c++ $(LDFLAGS) -o $@ $^
 
-build/java-parser.o: build/java-parser.cpp build/common.hpp | build
+build/parser.o: build/parser.cpp build/common.hpp | build
 	c++ $(CXXFLAGS) -c -o $@ $<
 
-build/java-parser.cpp: java-parser.ypp | build
+build/parser.cpp: parser.ypp | build
 	bison $(BISONFLAGS) -d -o $@ $<
 
 build/java-lexer.o: build/java-lexer.cpp build/common.hpp | build
 	cc $(CFLAGS) -c -o $@ $<
 
-build/java-lexer.cpp: java-lexer.ypp | build
+build/java-lexer.cpp:lexer.lex | build
 	flex -o $@ $<
