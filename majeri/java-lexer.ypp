@@ -14,13 +14,13 @@
     #include "java-parser.hpp"
 %}
 
-BLANK [[:space:]]
-
 DIGIT [0-9]
 
 INTEGER {DIGIT}+
 
-IDENTIFIER [[:alpha:]|_]([[:alnum:]]|_)*
+LETTER [a-zA-Z_]
+LETTERDIGIT [a-zA-Z0-9_]
+IDENTIFIER {LETTER}{LETTERDIGIT}*
 
 /* Define an exclusive mode for the multi line comment */
 %x COMMENT
@@ -28,10 +28,10 @@ IDENTIFIER [[:alpha:]|_]([[:alnum:]]|_)*
 %%
 
 "//".+ /* Ignore single line comment */
-
-<INITIAL>"/*" BEGIN(COMMENT);
-<COMMENT>"*/" BEGIN(INITIAL);
-<COMMENT>.|"\n" /* Ignore comment contents */
+"/*"            { BEGIN(COMMENT); }
+<COMMENT>"*/" { BEGIN(INITIAL); }
+<COMMENT>\n   { }
+<COMMENT>.    { }
 
 class return yy::parser::make_CLASS_KEYWORD();
 

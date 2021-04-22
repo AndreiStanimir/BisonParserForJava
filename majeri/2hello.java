@@ -2,9 +2,17 @@ public class Test{
 
     private static int number1234 = 1234;
 
+    /*test
+    test
+
+    */
+
+
+    //cococco
 
     public static boolean isPrime(int n)
     {
+        int i;
         for (int i = 2; i < n; i++)
         {
             if (n % i == 0)
