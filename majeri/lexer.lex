@@ -1,15 +1,14 @@
 %option noyywrap nounput noinput batch
 
-/* Enable debug mode */
-/* %option debug */
-
 %{
     // Include the common interface
     #include "common.hpp"
 
     // Include the parser's function definitions
-    #include "java-parser.hpp"
+    #include "parser.hpp"
 %}
+
+
 
 DIGIT [0-9]
 
@@ -22,6 +21,9 @@ IDENTIFIER {LETTER}{LETTERDIGIT}*
 %x COMMENT
 
 %%
+
+[[:space:]] 
+
 
 "//".+ /* Ignore single line comment */
 "/*"            { BEGIN(COMMENT); }
@@ -40,34 +42,36 @@ static return yy::parser::make_STATIC_KEYWORD();
 
 
 if return yy::parser::make_IF_KEYWORD();
-while return yy::parser::make_WHILE_KEYWORD();
 for return yy::parser::make_FOR_KEYWORD();
+while return yy::parser::make_WHILE_KEYWORD();
 return return yy::parser::make_RETURN_KEYWORD();
 
-"(" return yy::parser::make_OPEN_PARENS();
-")" return yy::parser::make_CLOSE_PARENS();
-"[" return yy::parser::make_OPEN_SQUARE_BRACKET();
-"]" return yy::parser::make_CLOSE_SQUARE_BRACKET();
 "{" return yy::parser::make_OPEN_BRACKET();
 "}" return yy::parser::make_CLOSE_BRACKET();
-"=" return yy::parser::make_EQUALS();
-"==" return yy::parser::make_EQUALS_EQUALS();
-"," return yy::parser::make_COMMA();
+"(" return yy::parser::make_OPEN_PARENS();
+")" return yy::parser::make_CLOSE_PARENS();
 ";" return yy::parser::make_SEMICOLON();
-"." return yy::parser::make_DOT();
 "+" return yy::parser::make_PLUS();
 "-" return yy::parser::make_MINUS();
+"=" return yy::parser::make_EQUALS();
+"==" return yy::parser::make_EQUALS_EQUALS();
 "<" return yy::parser::make_LESS_THAN();
 ">" return yy::parser::make_GREATER_THAN();
 "++" return yy::parser::make_PLUS_PLUS();
 "%" return yy::parser::make_MODULO();
+"." return yy::parser::make_DOT();
+"," return yy::parser::make_COMMA();
+"[" return yy::parser::make_OPEN_SQUARE_BRACKET();
+"]" return yy::parser::make_CLOSE_SQUARE_BRACKET();
+
+
+
 {INTEGER} return yy::parser::make_NUMBER(std::stoi(yytext));
 
 \".*\" return yy::parser::make_STRING(yytext);
 
 {IDENTIFIER} return yy::parser::make_IDENTIFIER(yytext);
 
-[[:space:]] 
 
 <<EOF>> return yy::parser::make_YYEOF();
 

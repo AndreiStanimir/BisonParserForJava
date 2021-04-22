@@ -20,7 +20,7 @@ build:
 build/common.hpp: common.hpp
 	cp $< $@
 
-build/parser: build/parser.o build/java-lexer.o | build
+build/parser: build/parser.o build/lexer.o | build
 	c++ $(LDFLAGS) -o $@ $^
 
 build/parser.o: build/parser.cpp build/common.hpp | build
@@ -29,8 +29,8 @@ build/parser.o: build/parser.cpp build/common.hpp | build
 build/parser.cpp: parser.ypp | build
 	bison $(BISONFLAGS) -d -o $@ $<
 
-build/java-lexer.o: build/java-lexer.cpp build/common.hpp | build
+build/lexer.o: build/lexer.cpp build/common.hpp | build
 	cc $(CFLAGS) -c -o $@ $<
 
-build/java-lexer.cpp:lexer.lex | build
+build/lexer.cpp:lexer.lex | build
 	flex -o $@ $<
